@@ -11,6 +11,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.calculadorav2.AlertGerenciador;
 import com.example.calculadorav2.R;
 import com.example.calculadorav2.calculos.CalculoArea;
 import com.google.android.material.textfield.TextInputEditText;
@@ -20,11 +21,12 @@ import java.text.DecimalFormat;
 public class AreaCirculoActivity extends AppCompatActivity {
 
     private TextInputEditText campoValorRaio;
-    private Button btnAreaCirc;
+    private Button btnAreaCirc, btnExibeCalculo;
     private ImageButton btnInfoCirc;
     private TextView textAreaCirc;
     private Double valorRaio;
     private DecimalFormat decimal;
+    private AlertGerenciador gerenciadorAlert;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +37,8 @@ public class AreaCirculoActivity extends AppCompatActivity {
         btnAreaCirc = findViewById(R.id.btnAreaCirc);
         btnInfoCirc = findViewById(R.id.btnInfoCirc);
         textAreaCirc = findViewById(R.id.textAreaCirc);
+        btnExibeCalculo = findViewById(R.id.btnExibeCalculo);
+        gerenciadorAlert = new AlertGerenciador(this);
 
         btnAreaCirc.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -44,6 +48,8 @@ public class AreaCirculoActivity extends AppCompatActivity {
                     decimal = new DecimalFormat("#,###.00");
                     valorRaio =  Double.parseDouble(campoValorRaio.getText().toString());
                     textAreaCirc.setText("A área do Circulo é: \n" + decimal.format(CalculoArea.areaCirculo(valorRaio)));
+                    btnExibeCalculo.setVisibility(View.VISIBLE);
+
                 }else
                     Toast.makeText(getApplicationContext(), "Preencha os campos acima", Toast.LENGTH_LONG).show();
 
@@ -53,7 +59,14 @@ public class AreaCirculoActivity extends AppCompatActivity {
         btnInfoCirc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                exibeAlert();
+                gerenciadorAlert.comoCalcularAreaCirculo();
+            }
+        });
+
+        btnExibeCalculo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                criaCalculo(valorRaio);
             }
         });
 
@@ -69,26 +82,14 @@ public class AreaCirculoActivity extends AppCompatActivity {
         return retorno;
     }
 
-    private void exibeAlert() {
+    private void criaCalculo(double raio){
 
-        AlertDialog alerta;
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("A  =   π    *       r² \n" );
+        buffer.append("A  =  3,14  *  " + raio + "² \n");
+        buffer.append("A  =  3,14  *  " + Math.pow(raio, 2) + "\n");
+        buffer.append("A  = " + decimal.format(CalculoArea.areaCirculo(raio)));
+        gerenciadorAlert.calculoAreaCirculo(buffer);
 
-        //Cria o gerador do AlertDialog
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        //define o titulo
-        builder.setTitle("Como é calculado a Área do Losango?");
-        //define a mensagem
-        builder.setMessage("A Área do Circulo é calculado da seguinte forma: \n" +
-                "Pi * r², (sendo 'Pi', o valor de 3,1415 e 'r²', a metade da circunferência da figura, vezes ele mesmo!!!).");
-        //define um botão como positivo
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface arg0, int arg1) {
-            }
-        });
-        //cria o AlertDialog
-        alerta = builder.create();
-        //Exibe
-        alerta.show();
     }
-
 }

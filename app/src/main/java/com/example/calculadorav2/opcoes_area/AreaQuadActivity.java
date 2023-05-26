@@ -11,6 +11,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.calculadorav2.AlertGerenciador;
 import com.example.calculadorav2.R;
 import com.example.calculadorav2.calculos.CalculoArea;
 import com.google.android.material.textfield.TextInputEditText;
@@ -21,12 +22,12 @@ public class AreaQuadActivity extends AppCompatActivity {
 
     private TextInputEditText textLado;
     private TextView textResultArea;
-    private Button btnAreaQuad;
+    private Button btnAreaQuad, btnExibeCalculo;
     private ImageButton btnInfoQuad;
     private Double valorLado;
     private String valor;
     private DecimalFormat decimal;
-    public AlertDialog alerta;
+    private AlertGerenciador gerenciadorAlert;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,8 +36,10 @@ public class AreaQuadActivity extends AppCompatActivity {
 
         textLado = findViewById(R.id.campoLado);
         btnAreaQuad = findViewById(R.id.btnAreaQuad);
+        btnExibeCalculo = findViewById(R.id.btnExibeCalculo);
         textResultArea = findViewById(R.id.textResultArea);
         btnInfoQuad = findViewById(R.id.btnInfoQuad);
+        gerenciadorAlert = new AlertGerenciador(this);
         decimal = new DecimalFormat("#,###.00");
 
         btnAreaQuad.setOnClickListener(new View.OnClickListener() {
@@ -46,6 +49,7 @@ public class AreaQuadActivity extends AppCompatActivity {
                 if(validarCampo(textLado)) {
                     valorLado = Double.parseDouble(textLado.getText().toString());
                     textResultArea.setText("A área do quadrado é: \n" + decimal.format(CalculoArea.areaQuadrado(valorLado)));
+                    btnExibeCalculo.setVisibility(View.VISIBLE);
                 }
                 else
                     Toast.makeText(getApplicationContext(), "Preencha o campo acima", Toast.LENGTH_LONG).show();
@@ -55,7 +59,14 @@ public class AreaQuadActivity extends AppCompatActivity {
         btnInfoQuad.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                exibeAlert();
+                gerenciadorAlert.comoCalcularAreaQuadradrado();
+            }
+        });
+
+        btnExibeCalculo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                criaCalculo(valorLado);
             }
         });
 
@@ -70,28 +81,17 @@ public class AreaQuadActivity extends AppCompatActivity {
         }else{
             retorno = true;
         }
-
         return retorno;
-
     }
 
-    private void exibeAlert() {
-        //Cria o gerador do AlertDialog
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        //define o titulo
-        builder.setTitle("Como é calculado a Área do Quadrado?");
-        //define a mensagem
-        builder.setMessage("A Área do Quadrado é calculado da seguinte forma: \n" +
-                "L x L, ou L², (sendo 'L', o lado da figura!!!).");
-        //define um botão como positivo
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface arg0, int arg1) {
-            }
-        });
-        //cria o AlertDialog
-        alerta = builder.create();
-        //Exibe
-        alerta.show();
+    private void criaCalculo(double lado){
+
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("A  =  ( L  *  L ) \n" );
+        buffer.append("A  =  " + lado + "  *  " + lado + " \n");
+        buffer.append("A  =    " + decimal.format(CalculoArea.areaQuadrado(lado)));
+        gerenciadorAlert.calculoAreaQuadrado(buffer);
+
     }
 
 }
